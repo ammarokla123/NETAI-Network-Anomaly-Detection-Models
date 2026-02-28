@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./checkpoints:/models:ro
+      - ./data:/app/data:ro
+    environment:
+      - DEVICE=cpu
+    restart: unless-stopped
+
+  training:
+    build:
+      context: .
+      dockerfile: Dockerfile.training
+    volumes:
+      - ./data:/app/data
+      - ./checkpoints:/app/checkpoints
+      - ./outputs:/app/outputs
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles:
+      - training

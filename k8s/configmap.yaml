@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netai-config
+  namespace: netai
+  labels:
+    app.kubernetes.io/name: netai-anomaly
+data:
+  default.yaml: |
+    data:
+      db_path: "/data/network_telemetry.db"
+      sequence_length: 60
+      train_split: 0.7
+      val_split: 0.15
+      test_split: 0.15
+    training:
+      epochs: 50
+      batch_size: 64
+      learning_rate: 0.001
+      device: "auto"
+      checkpoint_dir: "/checkpoints"
+    evaluation:
+      threshold_percentile: 95

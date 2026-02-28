@@ -1,0 +1,17 @@
+# LSTM model configuration
+model:
+  name: "lstm"
+  input_dim: null             # set dynamically from feature count
+  hidden_dim: 64
+  num_layers: 2
+  dropout: 0.2
+  bidirectional: true
+  output_dim: null            # set dynamically (reconstruction)
+  use_attention: true
+
+training:
+  epochs: 50
+  batch_size: 64
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+  loss: "mse"

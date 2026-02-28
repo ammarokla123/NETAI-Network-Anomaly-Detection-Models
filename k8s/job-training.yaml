@@ -1,0 +1,55 @@
+# GPU-enabled training Job for NRP Kubernetes cluster
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: netai-train
+  namespace: netai
+  labels:
+    app.kubernetes.io/name: netai-anomaly
+    app.kubernetes.io/component: training
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: netai-train
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: trainer
+          image: netai-anomaly-training:latest
+          args:
+            - "--model"
+            - "transformer"
+            - "--device"
+            - "auto"
+          resources:
+            requests:
+              cpu: "4"
+              memory: "8Gi"
+              nvidia.com/gpu: "1"
+            limits:
+              cpu: "8"
+              memory: "16Gi"
+              nvidia.com/gpu: "1"
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/data
+            - name: checkpoint-volume
+              mountPath: /app/checkpoints
+            - name: config-volume
+              mountPath: /app/configs
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: netai-data-pvc
+        - name: checkpoint-volume
+          persistentVolumeClaim:
+            claimName: netai-models-pvc
+        - name: config-volume
+          configMap:
+            name: netai-config
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"

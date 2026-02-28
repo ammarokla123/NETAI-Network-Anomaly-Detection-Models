@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: netai-inference
+  namespace: netai
+  labels:
+    app.kubernetes.io/name: netai-anomaly
+    app.kubernetes.io/component: inference
+spec:
+  type: ClusterIP
+  selector:
+    app: netai-inference
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8000
+      protocol: TCP
